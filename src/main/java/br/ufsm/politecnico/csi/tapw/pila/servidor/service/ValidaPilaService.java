@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -56,6 +57,8 @@ public class ValidaPilaService {
             byte[] hash = md.digest(pilaJson.getBytes("UTF-8"));
 
             BigInteger numHash = new BigInteger(hash).abs();
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> resp = null;
 
 
             if (numHash.compareTo(dificuldade) < 0) {

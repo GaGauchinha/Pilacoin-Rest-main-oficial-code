@@ -6,20 +6,25 @@ import br.ufsm.politecnico.csi.tapw.pila.model.PilacoinModel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
 
 import java.math.BigInteger;
 import java.net.URL;
-import java.net.http.HttpHeaders;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 
 public class ValidaBlocoService {
+
+    private static final String SAMPLE_URL = "http://srv-ceesp.proj.ufsm.br:8097/bloco/";
+  //  private static final String SAMPLE_URL = "http://srv-ceesp.proj.ufsm.br:8097/bloco/numBloco";
 
     public static BigInteger dificuldade = BigInteger.ZERO;
     public static KeyPair keyPair;
@@ -29,6 +34,8 @@ public class ValidaBlocoService {
 
         UsuarioService UsuarioService = new UsuarioService();
         KeyPair keyPair = UsuarioService.leKeyPair();
+
+        String blocoJson;
 
 
         BlocoV blocoValidado = new BlocoV();
@@ -49,7 +56,7 @@ public class ValidaBlocoService {
 
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            String blocoJson = objectMapper.writeValueAsString(blocoModel);
+            blocoJson = objectMapper.writeValueAsString(blocoModel);
 
 
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -66,16 +73,17 @@ public class ValidaBlocoService {
             }
         }
 
-        HttpHeaders headers;
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpUriRequest request = RequestBuilder.get()
+                .setUri(SAMPLE_URL)
+                .setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                .build();
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> resp = null;
-        String blocoJson = objectMapper.writeValueAsString(blocoModel);
 
         try{
             RequestEntity<String> requestEntity = RequestEntity.post(new URL(
-                            "http://"+ "srv-ceesp.proj.ufsm.br:8097" + "/bloco/").toURI())
-                    .contentType(MediaType.APPLICATION_JSON).body(blocoJson);
+                    SAMPLE_URL ).toURI()).contentType(MediaType.
+                    APPLICATION_JSON).body(blocoJson);
             resp = restTemplate.exchange(requestEntity, String.class);
 
             if (resp.getStatusCode() == HttpStatus.OK){
@@ -86,5 +94,7 @@ public class ValidaBlocoService {
             System.out.println("ERRO AO VALIDAR " + e.getMessage());
             e.printStackTrace();
         }
-}
+
+    }
+
 }
