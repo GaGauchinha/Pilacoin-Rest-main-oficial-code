@@ -23,6 +23,9 @@ public class ValidaPilaService {
     public static BigInteger dificuldade = BigInteger.ZERO;
     public static KeyPair keyPair;
 
+    private static final String VALIDA_PILA_COLEGA
+            = "http://srv-ceesp.proj.ufsm.br:8097/pilacoin/";
+
     @SneakyThrows
     public static boolean validarPilaColega(PilacoinModel pilacoinModelColega) {
 
@@ -48,9 +51,7 @@ public class ValidaPilaService {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-
             String pilaJson = objectMapper.writeValueAsString(pilacoinModel);
-
 
             MessageDigest md = MessageDigest.getInstance("SHA-256");
 
@@ -71,7 +72,7 @@ public class ValidaPilaService {
 
             try{
                 RequestEntity<String> requestEntity = RequestEntity.post(new URL(
-                                "http://"+ "srv-ceesp.proj.ufsm.br:8097" + "/pilacoin/").toURI())
+                                VALIDA_PILA_COLEGA).toURI())
                         .contentType(MediaType.APPLICATION_JSON).body(pilaJson);
                 resp = restTemplate.exchange(requestEntity, String.class);
 
@@ -85,7 +86,6 @@ public class ValidaPilaService {
             }
 
         }
-
         return false;
     }
 }

@@ -1,6 +1,5 @@
 package br.ufsm.politecnico.csi.tapw.pila.servidor.service;
 
-import br.ufsm.politecnico.csi.tapw.pila.controller.MineracaoController;
 import br.ufsm.politecnico.csi.tapw.pila.servidor.client.WebSocketClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;

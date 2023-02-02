@@ -1,8 +1,6 @@
 package br.ufsm.politecnico.csi.tapw.pila.servidor.service;
 
-import br.ufsm.politecnico.csi.tapw.pila.controller.MineracaoController;
 import br.ufsm.politecnico.csi.tapw.pila.model.PilacoinModel;
-import br.ufsm.politecnico.csi.tapw.pila.servidor.client.WebSocketClient;
 import br.ufsm.politecnico.csi.tapw.pila.servidor.repository.PilaRepository;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -21,22 +18,24 @@ import org.springframework.web.client.RestTemplate;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.*;
 import java.util.Date;
 
-import static java.math.BigInteger.valueOf;
-
 @Service
-public class MineracaoService{
+public class MineracaoService  {
 
     @Autowired(required = false)
-    private PilaRepository pilaRepository;
-    public static BigInteger dificuldade = BigInteger.ZERO;
+    PilaRepository pilaRepository;
 
-    @Value("${endereco.server}")
-    private static String enderecoServer;
+    public static BigInteger dificuldade = BigInteger.ZERO;
+    private static final String REGISTRA_MEU_PILA
+            = "http://srv-ceesp.proj.ufsm.br:8097/pilacoin/";
+
+    private static final String VALIDA_MEU_PILA
+            = "http://srv-ceesp.proj.ufsm.br:8097/pilacoin/?nonce=";
+
+//    @Value("${endereco.server}")
+//    private static String enderecoServer;
 
     @SneakyThrows
     public void initPilacoin (boolean minerar) {
@@ -44,8 +43,6 @@ public class MineracaoService{
         KeyPair keyPair =UsuarioService.leKeyPair();
         while (minerar){
             dificuldade = WebSocketService.sessionHandler.getDificuldade();
-
-            BigInteger numTentativas = valueOf(0);
 
             dificuldade = WebSocketService.sessionHandler.getDificuldade();
             PublicKey publicKey = UsuarioService.getPublicKey();
@@ -78,7 +75,8 @@ public class MineracaoService{
 
 
                 if (numHash.compareTo(dificuldade) < 0) {
-                    System.out.println(Base64.encodeBase64String(keyPair.getPublic().getEncoded()));
+                    System.out.println(Base64.encodeBase64String(keyPair
+                            .getPublic().getEncoded()));
                     System.out.println("Minerou");
                     System.out.println("Numhash:" +numHash);
                     System.out.println("Dificuldade:" +dificuldade);
@@ -98,11 +96,9 @@ public class MineracaoService{
 
 
         try {
-            //posta meu pila
             RequestEntity<String> requestEntity = RequestEntity.post(new URL(
-                            "http://"+ "srv-ceesp.proj.ufsm.br:8097" + "/pilacoin/").toURI())
+                            REGISTRA_MEU_PILA).toURI())
                     .contentType(MediaType.APPLICATION_JSON).body(pilaJson);
-
             resp = restTemplate.exchange(requestEntity, PilacoinModel.class);
             if (resp.getStatusCode() == HttpStatus.OK){
                 System.out.println("ENVIOU PRO SERVER");
@@ -120,7 +116,7 @@ public class MineracaoService{
         RestTemplate restTemplate = new RestTemplate();
         try {
             //get nos meus pilas
-            resp= restTemplate.getForEntity("http://"+ "srv-ceesp.proj.ufsm.br:8097" + "/pilacoin/?nonce="+
+            resp= restTemplate.getForEntity(VALIDA_MEU_PILA+
                     nonce, String.class);
 
             if (resp.getStatusCode() == HttpStatus.OK){
@@ -152,4 +148,6 @@ public class MineracaoService{
             System.out.println("Pila invalido: "+e.getMessage());
         }
     }
+
+
 }

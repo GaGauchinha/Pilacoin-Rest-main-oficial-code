@@ -23,8 +23,10 @@ import java.security.SecureRandom;
 
 public class ValidaBlocoService {
 
-    private static final String SAMPLE_URL = "http://srv-ceesp.proj.ufsm.br:8097/bloco/";
-  //  private static final String SAMPLE_URL = "http://srv-ceesp.proj.ufsm.br:8097/bloco/numBloco";
+    private static final String SAMPLE_URL
+            = "http://srv-ceesp.proj.ufsm.br:8097/bloco/";
+  //  private static final String SAMPLE_URL
+    //  = "http://srv-ceesp.proj.ufsm.br:8097/bloco/numBloco";
 
     public static BigInteger dificuldade = BigInteger.ZERO;
     public static KeyPair keyPair;

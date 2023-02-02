@@ -1,5 +1,6 @@
 package br.ufsm.politecnico.csi.tapw.pila.servidor.service;
 
+import br.ufsm.politecnico.csi.tapw.pila.servidor.interfaces.PilaServiceInterface;
 import br.ufsm.politecnico.csi.tapw.pila.model.PilacoinModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +16,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class PilaService {
+public class PilaService implements PilaServiceInterface {
 
-    public List<PilacoinModel> getPila(){
+    private static final String LISTA_PILAS
+            = "http://srv-ceesp.proj.ufsm.br:8097/pilacoin/all";
+
+    @Override
+    public List<PilacoinModel> findAll() {
         List<PilacoinModel> pilas = null;
         List<PilacoinModel> pilaMeu = new ArrayList<PilacoinModel>();
         UsuarioService UsuarioService = new UsuarioService();
@@ -26,19 +31,21 @@ public class PilaService {
         ResponseEntity<String> resp = null;
         RestTemplate restTemplate = new RestTemplate();
 
-        resp = restTemplate.getForEntity("http://" + "srv-ceesp.proj.ufsm.br:8097"
-                + "/pilacoin/all", String.class);
+        resp = restTemplate.getForEntity(LISTA_PILAS, String.class);
 
         if (resp.getStatusCode() == HttpStatus.OK) {
             ObjectMapper mapper = new ObjectMapper();
             try {
-                pilas = Arrays.asList(mapper.readValue(resp.getBody(), PilacoinModel[].class));
+                pilas = Arrays.asList(mapper.readValue(resp.getBody(),
+                        PilacoinModel[].class));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
             for (PilacoinModel pilacoinModel : pilas) {
-                String minhaChave = Base64.encodeBase64String(keyPair.getPublic().getEncoded());
-                String base64 = Base64.encodeBase64String(pilacoinModel.getChaveCriador());
+                String minhaChave = Base64.encodeBase64String(keyPair
+                        .getPublic().getEncoded());
+                String base64 = Base64.encodeBase64String(pilacoinModel
+                        .getChaveCriador());
                 if (base64.equals(minhaChave)) {
                     pilaMeu.add(pilacoinModel);
                 }
