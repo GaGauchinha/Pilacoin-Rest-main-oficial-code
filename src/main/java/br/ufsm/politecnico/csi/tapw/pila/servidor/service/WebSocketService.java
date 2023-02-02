@@ -1,6 +1,7 @@
 package br.ufsm.politecnico.csi.tapw.pila.servidor.service;
 
 import br.ufsm.politecnico.csi.tapw.pila.controller.MineracaoController;
+import br.ufsm.politecnico.csi.tapw.pila.servidor.client.WebSocketClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.Message;
@@ -13,9 +14,9 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 @Service
-public class WebsocketService {
+public class WebSocketService {
 
-    public static MineracaoController sessionHandler;
+    public static WebSocketClient sessionHandler;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
@@ -36,7 +37,6 @@ public class WebsocketService {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompCommand command = accessor.getCommand();
         if (command.equals(StompCommand.SUBSCRIBE)) {
-            System.out.println("------------- Topico Inscrito ----------------");
             String sessionId = accessor.getSessionId();
             String stompSubscriptionId = accessor.getSubscriptionId();
             String destination = accessor.getDestination();

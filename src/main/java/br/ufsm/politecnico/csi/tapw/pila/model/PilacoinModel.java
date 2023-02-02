@@ -100,15 +100,15 @@ public class PilacoinModel implements Serializable {
     public static final String BLOCO_AVALIANDO = "BLOCO_AVALIANDO";
     public static final String VÁLIDO = "VÁLIDO";
     public static final String INVÁLIDO = "INVÁLIDO";
-    public PilacoinModel(String idCriador, Date dataCriacao, byte[] chaveCriador,
-                         byte[] assinaturaMestre, BigInteger nonce, String status) {
-        this.idCriador = idCriador;
-        this.dataCriacao = dataCriacao;
-        this.chaveCriador = chaveCriador;
-        this.assinaturaMestre = assinaturaMestre;
-        this.nonce = nonce;
-        this.status = status;
-    }
+//    public PilacoinModel(String idCriador, Date dataCriacao, byte[] chaveCriador,
+//                         byte[] assinaturaMestre, BigInteger nonce, String status) {
+//        this.idCriador = idCriador;
+//        this.dataCriacao = dataCriacao;
+//        this.chaveCriador = chaveCriador;
+//        this.assinaturaMestre = assinaturaMestre;
+//        this.nonce = nonce;
+//        this.status = status;
+//    }
 
 
 }

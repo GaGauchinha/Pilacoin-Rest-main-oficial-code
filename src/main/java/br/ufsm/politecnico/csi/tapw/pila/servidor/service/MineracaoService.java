@@ -2,6 +2,7 @@ package br.ufsm.politecnico.csi.tapw.pila.servidor.service;
 
 import br.ufsm.politecnico.csi.tapw.pila.controller.MineracaoController;
 import br.ufsm.politecnico.csi.tapw.pila.model.PilacoinModel;
+import br.ufsm.politecnico.csi.tapw.pila.servidor.client.WebSocketClient;
 import br.ufsm.politecnico.csi.tapw.pila.servidor.repository.PilaRepository;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,16 +31,9 @@ import static java.math.BigInteger.valueOf;
 @Service
 public class MineracaoService{
 
-    @Autowired
-    private PilaRepository pilaRepository;
     @Autowired(required = false)
-    private PilacoinModel pilacoinModel;
-    @Autowired
-    private PilaService pilaService;
-    @Autowired
-    private MineracaoController mineracaoController = new MineracaoController();
-
-    public static KeyPair keyPair;
+    private PilaRepository pilaRepository;
+    public static BigInteger dificuldade = BigInteger.ZERO;
 
     @Value("${endereco.server}")
     private static String enderecoServer;
@@ -48,11 +42,12 @@ public class MineracaoService{
     public void initPilacoin (boolean minerar) {
        UsuarioService UsuarioService = new UsuarioService();
         KeyPair keyPair =UsuarioService.leKeyPair();
-        BigInteger dificuldade = mineracaoController.getDificuldade();
+        while (minerar){
+            dificuldade = WebSocketService.sessionHandler.getDificuldade();
 
-        BigInteger numTentativas = valueOf(0);
+            BigInteger numTentativas = valueOf(0);
 
-            dificuldade = WebsocketService.sessionHandler.getDificuldade();
+            dificuldade = WebSocketService.sessionHandler.getDificuldade();
             PublicKey publicKey = UsuarioService.getPublicKey();
 
             if(dificuldade != null){
@@ -60,19 +55,19 @@ public class MineracaoService{
                 SecureRandom sr = new SecureRandom();
                 BigInteger mNumber = new BigInteger(128, sr);
 
-
-                PilacoinModel pilaCoin = new PilacoinModel();
-                pilaCoin.setDataCriacao(new Date());
-                pilaCoin.setChaveCriador(publicKey.getEncoded());
-                pilaCoin.setNonce(new BigInteger(128, sr).abs());
-                pilaCoin.setIdCriador("Gabi");
-                pilaCoin.setStatus(PilacoinModel.VALIDACAO);
+                PilacoinModel pilacoinModel = PilacoinModel.builder()
+                        .dataCriacao(new Date())
+                        .chaveCriador(keyPair.getPublic().getEncoded())
+                        .idCriador("Gabi")
+                        .nonce(new BigInteger(128, sr).abs())
+                        .status(PilacoinModel.VALIDACAO)
+                        .build();
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
 
-                String pilaJson = objectMapper.writeValueAsString(pilaCoin);
+                String pilaJson = objectMapper.writeValueAsString(pilacoinModel);
 
 
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -88,55 +83,16 @@ public class MineracaoService{
                     System.out.println("Numhash:" +numHash);
                     System.out.println("Dificuldade:" +dificuldade);
 
-                    registrarPila(pilaJson , pilaCoin.getNonce());
+                    registrarPila(pilaJson , pilacoinModel.getNonce());
 
-                } else {
-                    numTentativas =  numTentativas.add(BigInteger.ONE);
                 }
-
             }
-
+        }
 
         }
 
-//
-//    @SneakyThrows
-//    private void Minerador (byte[] hash, PilacoinModel pilacoinModel){
-//
-//        BigInteger numHash = new BigInteger(hash).abs();
-//        BigInteger dificuldade = mineracaoController.getDificuldade();
-//        SecureRandom rnd = new SecureRandom();
-//        BigInteger nonce = pilacoinModel.getNonce();
-//        BigInteger numTentativas = valueOf(0);
-//
-//        if (numHash.compareTo(dificuldade) < 0) {
-//            System.out.println(Base64.encodeBase64String(keyPair.
-//                    getPublic().getEncoded()));
-//
-//            System.out.println("Minerou");
-//            System.out.printf("NumHash:" + numHash);
-//            System.out.printf("Dificuldade:" + dificuldade);
-//            System.out.println(" nonce: " + pilacoinModel.getNonce());
-//            String pilaJson = new ObjectMapper().writeValueAsString(pilacoinModel);
-//
-//            System.out.println(pilaJson);
-//
-//            MessageDigest md = null;
-//            md = MessageDigest.getInstance("SHA-256");
-//            md.digest(pilaJson.getBytes("UTF-8"));
-//
-//            registrarPila(pilaJson, pilacoinModel.getNonce());
-//
-//        } else {
-//            numTentativas =  numTentativas.add(BigInteger.ONE);
-//
-//        }
-//    }
-
     @SneakyThrows
     private void registrarPila(String pilaJson, BigInteger nonce){
-        byte[] publicKeyBytes = Files.readAllBytes(Path.of("pub.key"));
-
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<PilacoinModel> resp = null;
 
@@ -144,8 +100,7 @@ public class MineracaoService{
         try {
             //posta meu pila
             RequestEntity<String> requestEntity = RequestEntity.post(new URL(
-                            "http://"+ "srv-ceesp.proj.ufsm.br:8097" +
-                                    "/pilacoin/").toURI())
+                            "http://"+ "srv-ceesp.proj.ufsm.br:8097" + "/pilacoin/").toURI())
                     .contentType(MediaType.APPLICATION_JSON).body(pilaJson);
 
             resp = restTemplate.exchange(requestEntity, PilacoinModel.class);
@@ -165,8 +120,7 @@ public class MineracaoService{
         RestTemplate restTemplate = new RestTemplate();
         try {
             //get nos meus pilas
-            resp= restTemplate.getForEntity("http://"+
-                    "srv-ceesp.proj.ufsm.br:8097" + "/pilacoin/?nonce="+
+            resp= restTemplate.getForEntity("http://"+ "srv-ceesp.proj.ufsm.br:8097" + "/pilacoin/?nonce="+
                     nonce, String.class);
 
             if (resp.getStatusCode() == HttpStatus.OK){

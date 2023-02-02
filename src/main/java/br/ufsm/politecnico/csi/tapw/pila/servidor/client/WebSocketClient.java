@@ -1,5 +1,8 @@
 package br.ufsm.politecnico.csi.tapw.pila.servidor.client;
 
+import br.ufsm.politecnico.csi.tapw.pila.model.BlocoModel;
+import br.ufsm.politecnico.csi.tapw.pila.model.PilacoinModel;
+import br.ufsm.politecnico.csi.tapw.pila.servidor.service.ValidaPilaService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -19,6 +22,7 @@ import java.util.Objects;
 @Service
 public class WebSocketClient {
 
+    @Getter
     private final MyStompSessionHandler sessionHandler = new MyStompSessionHandler();
     @Value(value = "${endereco.server}")
     private String enderecoServer;
@@ -41,7 +45,7 @@ public class WebSocketClient {
     }
 
     private static class MyStompSessionHandler implements StompSessionHandler {
-
+        @Getter
         private BigInteger dificuldade;
 
         @Override
@@ -49,6 +53,8 @@ public class WebSocketClient {
                                    StompHeaders stompHeaders)
         {
             stompSession.subscribe("/topic/dificuldade", this);
+            stompSession.subscribe("/topic/validaMineracao", this);
+            stompSession.subscribe("/topic/descobrirNovoBloco", this);
         }
 
         @Override
@@ -64,16 +70,29 @@ public class WebSocketClient {
             //System.out.println(stompHeaders);
             if (Objects.equals(stompHeaders.getDestination(), "/topic/dificuldade")) {
                 return DificuldadeRet.class;
+            }else if (Objects.equals(stompHeaders.getDestination(), "/topic/validaMineracao")) {
+                System.out.println("tem pila pra minerar");
+                return PilacoinModel.class;
+            }else if (Objects.equals(stompHeaders.getDestination(), "/topic/descobrirNovoBloco")) {
+                System.out.println("tem bloco pra minerar");
+                return BlocoModel.class;
             }
             return null;
         }
 
         @Override
-        public void handleFrame(StompHeaders stompHeaders, Object o) {
-            //System.out.println("Received : " + o);
-            assert o != null;
-            if (Objects.equals(stompHeaders.getDestination(), "/topic/dificuldade")) {
-                dificuldade = new BigInteger(((DificuldadeRet) o).getDificuldade(), 16);
+        public void handleFrame(StompHeaders stompHeaders, Object a) {
+            assert a != null;
+            if (a.getClass().equals(DificuldadeRet.class)) {
+                dificuldade = new BigInteger(((DificuldadeRet) a).getDificuldade(), 16);
+            }else if (a.getClass().equals(PilacoinModel.class)) {
+                PilacoinModel pilacoinModel = (PilacoinModel) a;
+                ValidaPilaService.validarPilaColega(pilacoinModel);
+                //System.out.println(pila.getNonce());
+            } else if (a.getClass().equals(BlocoModel.class)) {
+                BlocoModel blocoModel = (BlocoModel) a;
+                ValidadaBlocoService.confirmaBloco(blocoModel);
+                System.out.println(blocoModel.getNonce());
             }
         }
     }

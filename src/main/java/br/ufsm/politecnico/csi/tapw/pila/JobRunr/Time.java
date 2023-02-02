@@ -7,7 +7,7 @@ import org.jobrunr.scheduling.cron.Cron;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
+//https://mkyong.com/spring-boot/spring-boot-jobrunr-examples/
 //https://www.baeldung.com/java-jobrunr-spring
 @Component
 public class Time {
