@@ -4,9 +4,14 @@ import br.ufsm.politecnico.csi.tapw.pila.model.PilacoinModel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigInteger;
+import java.net.URL;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -61,6 +66,20 @@ public class ValidaPilaService {
                 System.out.println("Pila inválido");
             }
 
+            try{
+                RequestEntity<String> requestEntity = RequestEntity.post(new URL(
+                                "http://"+ "srv-ceesp.proj.ufsm.br:8097" + "/pilacoin/").toURI())
+                        .contentType(MediaType.APPLICATION_JSON).body(pilaJson);
+                resp = restTemplate.exchange(requestEntity, String.class);
+
+                if (resp.getStatusCode() == HttpStatus.OK){
+                    System.out.println("POSTOU COM SUCESSO");
+                }
+            }
+            catch(Exception e){
+                System.out.println("ERRO AO VALIDAR " + e.getMessage());
+                e.printStackTrace();
+            }
 
         }
 

@@ -2,6 +2,7 @@ package br.ufsm.politecnico.csi.tapw.pila.servidor.client;
 
 import br.ufsm.politecnico.csi.tapw.pila.model.BlocoModel;
 import br.ufsm.politecnico.csi.tapw.pila.model.PilacoinModel;
+import br.ufsm.politecnico.csi.tapw.pila.servidor.service.ValidaBlocoService;
 import br.ufsm.politecnico.csi.tapw.pila.servidor.service.ValidaPilaService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,7 +92,7 @@ public class WebSocketClient {
                 //System.out.println(pila.getNonce());
             } else if (a.getClass().equals(BlocoModel.class)) {
                 BlocoModel blocoModel = (BlocoModel) a;
-                ValidadaBlocoService.confirmaBloco(blocoModel);
+                ValidaBlocoService.ValidaBloco(blocoModel);
                 System.out.println(blocoModel.getNonce());
             }
         }
