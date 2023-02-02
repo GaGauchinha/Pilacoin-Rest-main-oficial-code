@@ -5,8 +5,11 @@ import br.ufsm.politecnico.csi.tapw.pila.model.PilacoinModel;
 import br.ufsm.politecnico.csi.tapw.pila.servidor.service.ValidaBlocoService;
 import br.ufsm.politecnico.csi.tapw.pila.servidor.service.ValidaPilaService;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -20,11 +23,14 @@ import javax.annotation.PostConstruct;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.Objects;
+
+
 @Service
 public class WebSocketClient {
 
     @Getter
     private final MyStompSessionHandler sessionHandler = new MyStompSessionHandler();
+
     @Value(value = "${endereco.server}")
     private String enderecoServer;
 
@@ -100,6 +106,7 @@ public class WebSocketClient {
 
 
     public BigInteger getDificuldade() {
+        System.out.println("Dificuldade : " );
         System.out.println(sessionHandler.dificuldade);
         return sessionHandler.dificuldade;
     }

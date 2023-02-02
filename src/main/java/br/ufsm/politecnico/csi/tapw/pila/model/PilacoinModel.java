@@ -9,12 +9,11 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
 
+
 @Entity
 @Builder
 @AllArgsConstructor
 @ToString
-//@Table(name = "pilacoin")
-
 public class PilacoinModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,21 +22,11 @@ public class PilacoinModel implements Serializable {
     //    @Column(name = "username", nullable = false, unique = true)
     //    private String username;
 
-    //    @Column(name = "idCriador")
     private String idCriador;
-    //    @Column(name = "dataCriacao")
     private Date dataCriacao;
-    //    @Column(name = "chaveCriador")
     private byte[] chaveCriador;
-    //    @Column(name = "assinaturaMestre")
     private byte[] assinaturaMestre;
-    //    @Column(name = "nonce")
     private BigInteger nonce;
-
-    public PilacoinModel() {
-
-    }
-
 
     public Long getId() {
         return id;

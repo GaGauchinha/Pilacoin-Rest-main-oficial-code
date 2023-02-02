@@ -30,21 +30,24 @@ public class UsuarioService {
 
     @PostConstruct
     public void init() {
-        System.out.println("Registrado usuário: " + registraUsuario("Gabi"));
+        System.out.println("Registrado usuário: "
+                + registraUsuario("Gabi"));
     }
 
     @SneakyThrows
     @Transactional
     public UsuarioRest registraUsuario(String nome) {
         KeyPair keyPair = leKeyPair();
-        UsuarioRest usuarioRest = UsuarioRest.builder().nome(nome).chavePublica(keyPair.getPublic().getEncoded()).build();
+        UsuarioRest usuarioRest = UsuarioRest.builder().nome(nome)
+                .chavePublica(keyPair.getPublic().getEncoded()).build();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         //headers.set("Authorization", "Bearer " + accessToken);
         HttpEntity<UsuarioRest> entity = new HttpEntity<>(usuarioRest, headers);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            ResponseEntity<UsuarioRest> resp = restTemplate.postForEntity("http://" + enderecoServer + "/usuario/", entity, UsuarioRest.class);
+            ResponseEntity<UsuarioRest> resp = restTemplate.
+                    postForEntity("http://" + enderecoServer + "/usuario/", entity, UsuarioRest.class);
             UsuarioRest usuarioRest2 = resp.getBody();
             UsuarioModel usuarioBD = new UsuarioModel();
             usuarioBD.setNome(usuarioRest.nome);
@@ -55,7 +58,9 @@ public class UsuarioService {
         } catch (Exception e) {
             System.out.println("usuario já cadastrado.");
             String strPubKey = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
-            ResponseEntity<UsuarioRest> resp = restTemplate.postForEntity("http://" + enderecoServer + "/usuario/findByChave", new HttpEntity<>(strPubKey, headers), UsuarioRest.class);
+            ResponseEntity<UsuarioRest> resp = restTemplate.
+                    postForEntity("http://" + enderecoServer + "/usuario/findByChave",
+                            new HttpEntity<>(strPubKey, headers), UsuarioRest.class);
             return resp.getBody();
         }
     }
