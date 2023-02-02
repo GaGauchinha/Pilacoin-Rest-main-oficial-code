@@ -68,19 +68,19 @@ public class ValidaBlocoService {
 
             if (numHash.compareTo(dificuldade) < 0) {
                 System.out.println("Bloco Minerado e validado");
+                break;
             } else {
                 System.out.println("Bloco inválido");
             }
-        }
 
+        }
         HttpUriRequest request = RequestBuilder.get()
                 .setUri(SAMPLE_URL)
                 .setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                 .build();
+
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> resp = null;
-
-        try{
             RequestEntity<String> requestEntity = RequestEntity.post(new URL(
                     SAMPLE_URL ).toURI()).contentType(MediaType.
                     APPLICATION_JSON).body(blocoJson);
@@ -88,13 +88,9 @@ public class ValidaBlocoService {
 
             if (resp.getStatusCode() == HttpStatus.OK){
                 System.out.println("POSTOU COM SUCESSO");
+            }else if (resp.getStatusCode() != HttpStatus.OK) {
+                System.out.println("ERRO AO VALIDAR " + resp.getStatusCode());
             }
-        }
-        catch(Exception e){
-            System.out.println("ERRO AO VALIDAR " + e.getMessage());
-            e.printStackTrace();
-        }
-
+        return false;
     }
-
 }
