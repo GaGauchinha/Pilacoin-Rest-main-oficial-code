@@ -16,7 +16,6 @@ import java.net.URL;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.Date;
 
 @Service
 public class ValidaPilaService {
@@ -45,7 +44,6 @@ public class ValidaPilaService {
                     .chaveCriador(pilacoinModelColega.getChaveCriador())
                     .idCriador(pilacoinModelColega.getIdCriador())
                     .nonce(pilacoinModelColega.getNonce())
-                    .status(pilacoinModelColega.getStatus())
                     .build();
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -64,8 +62,6 @@ public class ValidaPilaService {
 
             if (numHash.compareTo(dificuldade) < 0) {
                 System.out.println("Pila validado");
-
-
             } else {
                 System.out.println("Pila inválido");
             }
@@ -84,7 +80,6 @@ public class ValidaPilaService {
                 System.out.println("ERRO AO VALIDAR " + e.getMessage());
                 e.printStackTrace();
             }
-
         }
         return false;
     }

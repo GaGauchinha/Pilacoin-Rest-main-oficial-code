@@ -2,6 +2,7 @@ package br.ufsm.politecnico.csi.tapw.pila.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -13,20 +14,17 @@ import java.util.Date;
 @Entity
 @Builder
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 public class PilacoinModel implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
-
-    //    @Column(name = "username", nullable = false, unique = true)
-    //    private String username;
-
     private String idCriador;
     private Date dataCriacao;
     private byte[] chaveCriador;
-    private byte[] assinaturaMestre;
-    private BigInteger nonce;
+    private byte[] assinaturaMaster;
+    private BigInteger nonce; //utilizar precisão de 128 bits
 
     public Long getId() {
         return id;
@@ -47,9 +45,8 @@ public class PilacoinModel implements Serializable {
     public Date getDataCriacao() {
         return dataCriacao;
     }
-    private String status;
 
-    public void setDataCriacao(Date dataMineracao) {
+    public void setDataCriacao(Date dataCriacao) {
         this.dataCriacao = dataCriacao;
     }
 
@@ -61,12 +58,12 @@ public class PilacoinModel implements Serializable {
         this.chaveCriador = chaveCriador;
     }
 
-    public byte[] getAssinaturaMestre() {
-        return assinaturaMestre;
+    public byte[] getAssinaturaMaster() {
+        return assinaturaMaster;
     }
 
-    public void setAssinaturaMestre(byte[] assinaturaMestre) {
-        this.assinaturaMestre = assinaturaMestre;
+    public void setAssinaturaMaster(byte[] assinaturaMaster) {
+        this.assinaturaMaster = assinaturaMaster;
     }
 
     public BigInteger getNonce() {
@@ -76,29 +73,4 @@ public class PilacoinModel implements Serializable {
     public void setNonce(BigInteger nonce) {
         this.nonce = nonce;
     }
-
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public static final String VALIDACAO = "VALIDACAO";
-    //public static final String AG_BLOCO = "AG_BLOCO";
-    public static final String BLOCO_AVALIANDO = "PILA_AVALIANDO";
-    public static final String VÁLIDO = "VÁLIDO";
-    public static final String INVÁLIDO = "INVÁLIDO";
-    public PilacoinModel(String idCriador, Date dataCriacao, byte[] chaveCriador,
-                         byte[] assinaturaMestre, BigInteger nonce, String status) {
-      this.idCriador = idCriador;
-        this.dataCriacao = dataCriacao;
-        this.chaveCriador = chaveCriador;
-        this.assinaturaMestre = assinaturaMestre;
-       this.nonce = nonce;
-    }
-
-
 }

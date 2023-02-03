@@ -1,9 +1,6 @@
 package br.ufsm.politecnico.csi.tapw.pila.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 
 @Entity
@@ -12,19 +9,12 @@ public class UsuarioModel {
     @Id
     @GeneratedValue
     private Long id;
-
-    @Column(name = "username", nullable = false, unique = true)
     private String username;
     private byte[] chavePublica;
-
     private byte[] chavePrivada;
     private String nome;
-
     private String email;
-
-   // @Column(name = "is_admin")
     public boolean isAdmin;
-    //@Column(name = "senha")
     private String senha;
     private String token;
 

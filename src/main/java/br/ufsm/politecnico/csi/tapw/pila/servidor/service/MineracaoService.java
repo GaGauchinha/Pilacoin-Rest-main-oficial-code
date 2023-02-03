@@ -34,30 +34,25 @@ public class MineracaoService  {
     private static final String VALIDA_MEU_PILA
             = "http://srv-ceesp.proj.ufsm.br:8097/pilacoin/?nonce=";
 
-//    @Value("${endereco.server}")
-//    private static String enderecoServer;
-
     @SneakyThrows
     public void initPilacoin (boolean minerar) {
-       UsuarioService UsuarioService = new UsuarioService();
-        KeyPair keyPair =UsuarioService.leKeyPair();
+
+        UsuarioService UsuarioService = new UsuarioService();
+        KeyPair keyPair = UsuarioService.leKeyPair();
         while (minerar){
             dificuldade = WebSocketService.sessionHandler.getDificuldade();
 
-            dificuldade = WebSocketService.sessionHandler.getDificuldade();
             PublicKey publicKey = UsuarioService.getPublicKey();
 
             if(dificuldade != null){
 
                 SecureRandom sr = new SecureRandom();
-                BigInteger mNumber = new BigInteger(128, sr);
 
                 PilacoinModel pilacoinModel = PilacoinModel.builder()
                         .dataCriacao(new Date())
                         .chaveCriador(keyPair.getPublic().getEncoded())
                         .idCriador("Gabi")
                         .nonce(new BigInteger(128, sr).abs())
-                        .status(PilacoinModel.VALIDACAO)
                         .build();
 
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -80,9 +75,7 @@ public class MineracaoService  {
                     System.out.println("Minerou");
                     System.out.println("Numhash:" +numHash);
                     System.out.println("Dificuldade:" +dificuldade);
-
                     registrarPila(pilaJson , pilacoinModel.getNonce());
-
                 }
             }
         }
@@ -93,7 +86,6 @@ public class MineracaoService  {
     private void registrarPila(String pilaJson, BigInteger nonce){
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<PilacoinModel> resp = null;
-
 
         try {
             RequestEntity<String> requestEntity = RequestEntity.post(new URL(
@@ -108,8 +100,6 @@ public class MineracaoService  {
             System.out.println("Erro ao registrar pila: "+e.getMessage());
         }
 }
-
-
     @SneakyThrows
     public void validarPila(String nonce, PilacoinModel pilacoinModel){
         ResponseEntity<String> resp = null;

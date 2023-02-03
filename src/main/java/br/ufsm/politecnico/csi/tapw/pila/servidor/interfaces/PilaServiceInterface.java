@@ -7,5 +7,4 @@ import java.util.List;
 public interface PilaServiceInterface {
     List<PilacoinModel> findAll();
 
-
 }

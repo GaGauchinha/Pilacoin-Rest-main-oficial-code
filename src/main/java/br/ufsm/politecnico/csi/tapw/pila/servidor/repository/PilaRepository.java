@@ -12,8 +12,7 @@ import javax.persistence.Persistence;
 
 @Repository
 public interface PilaRepository extends JpaRepository<PilacoinModel, Long>, JpaSpecificationExecutor<PilacoinModel> {
-    EntityManagerFactory factory = Persistence.createEntityManagerFactory("pilacoinFactory");
-    EntityManager entityManager = factory.createEntityManager();
+
 //    TypedQuery<PilacoinModel> pilacoinModel = entityManager.createQuery("SELECT * FROM pilacoinModel pi", PilacoinModel.class);
 
 //    List<PilacoinModel> pilacoinModels = pilacoinModel.getResultList();

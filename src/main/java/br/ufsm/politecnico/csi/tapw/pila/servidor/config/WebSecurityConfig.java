@@ -25,8 +25,6 @@ public class WebSecurityConfig implements WebSecurityConfigInterface, WebMvcConf
     public AuthenticationFilter authenticationFilter() throws Exception {
         return new AuthenticationFilter();
     }
-    
-    
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

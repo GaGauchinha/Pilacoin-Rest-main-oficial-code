@@ -38,15 +38,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("Expired Token? " + new JWTTokenUtil().isTokenExpired(token));
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
                     UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                     if (!new JWTTokenUtil().isTokenExpired(token)) {
                         UsernamePasswordAuthenticationToken authenticationToken =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
+                                new UsernamePasswordAuthenticationToken(userDetails,
+                                        null, userDetails.getAuthorities());
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
                     }
                 }
             }

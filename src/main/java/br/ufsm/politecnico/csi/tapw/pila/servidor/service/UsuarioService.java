@@ -25,8 +25,9 @@ import java.util.Base64;
 public class UsuarioService {
     @Value("${endereco.server}")
     private String enderecoServer;
-    @Autowired
-    private UsuarioRepository repositorioUsuario;
+
+    @Autowired(required=false)
+    UsuarioRepository repositorioUsuario;
 
     @PostConstruct
     public void init() {
@@ -59,7 +60,8 @@ public class UsuarioService {
             System.out.println("usuario já cadastrado.");
             String strPubKey = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
             ResponseEntity<UsuarioRest> resp = restTemplate.
-                    postForEntity("http://" + enderecoServer + "/usuario/findByChave",
+                    postForEntity("http://" + enderecoServer
+                                    + "/usuario/findByChave",
                             new HttpEntity<>(strPubKey, headers), UsuarioRest.class);
             return resp.getBody();
         }
